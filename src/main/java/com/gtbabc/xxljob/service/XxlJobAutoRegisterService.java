@@ -1,6 +1,7 @@
 package com.gtbabc.xxljob.service;
 
 import com.gtbabc.xxljob.annotation.XxlJobAutoRegister;
+import com.gtbabc.xxljob.enums.ScheduleTypeEnum;
 import com.gtbabc.xxljob.model.XxlJobGroup;
 import com.gtbabc.xxljob.model.XxlJobInfo;
 import com.xxl.job.core.handler.annotation.XxlJob;
@@ -12,9 +13,11 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.core.MethodIntrospector;
 import org.springframework.core.annotation.AnnotatedElementUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 /**
  * xxl-job 自动注册服务
@@ -83,19 +86,36 @@ public class XxlJobAutoRegisterService implements ApplicationListener<Applicatio
 
     private XxlJobInfo createXxlJobInfo(XxlJobGroup xxlJobGroup, XxlJob xxlJob, XxlJobAutoRegister xxlJobAutoRegister) {
         XxlJobInfo xxlJobInfo = new XxlJobInfo();
+        // 基础配置
         xxlJobInfo.setJobGroup(xxlJobGroup.getId());
         xxlJobInfo.setJobDesc(xxlJobAutoRegister.jobDesc());
         xxlJobInfo.setAuthor(xxlJobAutoRegister.author());
-        xxlJobInfo.setScheduleType("CRON");
-        xxlJobInfo.setScheduleConf(xxlJobAutoRegister.cron());
+        xxlJobInfo.setAlarmEmail(xxlJobAutoRegister.alarmEmail());
+
+        // 调度配置
+        if (StringUtils.hasText(xxlJobAutoRegister.cron())) {
+            xxlJobInfo.setScheduleType(ScheduleTypeEnum.CRON.getValue());
+            xxlJobInfo.setScheduleConf(xxlJobAutoRegister.cron());
+        } else {
+            xxlJobInfo.setScheduleType(ScheduleTypeEnum.FIX_RATE.getValue());
+            // 时间
+            xxlJobInfo.setScheduleConf(String.valueOf(TimeUnit.SECONDS.convert(xxlJobAutoRegister.scheduleConf(), xxlJobAutoRegister.timeUnit())));
+        }
+
+        // 任务配置
         xxlJobInfo.setGlueType("BEAN");
         xxlJobInfo.setExecutorHandler(xxlJob.value());
+        xxlJobInfo.setExecutorParam(xxlJobAutoRegister.executorParam());
+
+        // 高级配置
         xxlJobInfo.setExecutorRouteStrategy(xxlJobAutoRegister.executorRouteStrategy());
-        xxlJobInfo.setMisfireStrategy("DO_NOTHING");
+        xxlJobInfo.setChildJobId(xxlJobAutoRegister.childJobId());
+        xxlJobInfo.setMisfireStrategy(xxlJobAutoRegister.misfireStrategy());
         xxlJobInfo.setExecutorBlockStrategy("SERIAL_EXECUTION");
-        xxlJobInfo.setExecutorTimeout(0);
-        xxlJobInfo.setExecutorFailRetryCount(0);
-        xxlJobInfo.setGlueRemark("auto register");
+        xxlJobInfo.setExecutorTimeout(xxlJobAutoRegister.executorTimeout());
+        xxlJobInfo.setExecutorFailRetryCount(xxlJobAutoRegister.executorFailRetryCount());
+
+        xxlJobInfo.setGlueRemark("GLUE代码初始化");
         xxlJobInfo.setTriggerStatus(xxlJobAutoRegister.triggerStatus());
         return xxlJobInfo;
     }

@@ -3,7 +3,6 @@
 **********************************
 
 基于 [XXL-JOB](https://www.xuxueli.com/xxl-job/) 的 Spring Boot Starter，通过自动装配和配置化方式，简化执行器的接入、配置和注册流程，让你「引入依赖 + 写配置」就能开始跑定时任务。
-参考：[xxl-job-auto-register](https://github.com/trunks2008/xxl-job-auto-register)
 
 ## 1、打包
 

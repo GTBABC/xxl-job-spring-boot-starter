@@ -4,22 +4,86 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.concurrent.TimeUnit;
 
 @Target({ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface XxlJobAutoRegister {
 
-    String cron();
+    /**
+     * 任务描述
+     *
+     */
+    String jobDesc() default "auto register task";
 
-    String jobDesc() default "auto register";
-
+    /**
+     * 负责人
+     */
     String author() default "auto";
 
-    /*
-     * 默认为 ROUND 轮询方式
-     * 可选： FIRST 第一个
-     * */
-    String executorRouteStrategy() default "ROUND";
+    /**
+     * 报警邮件，多个以逗号分隔
+     */
+    String alarmEmail() default "";
 
+    /**
+     * cron 表达式
+     */
+    String cron();
+
+    /**
+     * 固定速度调用时调用值 如果cron为空时使用此配置
+     */
+    long scheduleConf() default 1;
+
+    /**
+     * 固定速度时调用速度的单位, 默认为秒
+     */
+    TimeUnit timeUnit() default TimeUnit.SECONDS;
+
+    /**
+     * 执行器任务参数
+     */
+    String executorParam() default "";
+
+    /**
+     * 执行器路由策略
+     * FIRST 第一个
+     * LAST 最后一个
+     * ROUND 轮询
+     * RANDOM 随机
+     * CONSISTENT_HASH 一致性HASH
+     * LEAST_FREQUENTLY_USED 最不经常使用
+     * LEAST_RECENTLY_USED 最近最久未使用
+     * FAILOVER 故障转移
+     * BUSYOVER 忙碌转移
+     * SHARDING_BROADCAST 分片广播
+     */
+    String executorRouteStrategy() default "FIRST";
+
+    /**
+     * 子任务ID，多个逗号分隔
+     */
+    String childJobId() default "";
+
+    /**
+     * 执行超时时间
+     */
+    int executorTimeout() default 0;
+
+    /**
+     * 失败重试次数
+     */
+    int executorFailRetryCount() default 0;
+
+
+    /**
+     * 调度过期策略(忽略: DO_NOTHING 立即执行一次: FIRE_ONCE_NOW)
+     */
+    String misfireStrategy() default "DO_NOTHING";
+
+    /**
+     * 调度状态 0 停止 1运行
+     */
     int triggerStatus() default 0;
 }
