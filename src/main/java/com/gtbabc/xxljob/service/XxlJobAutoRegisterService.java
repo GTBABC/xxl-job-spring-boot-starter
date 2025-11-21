@@ -96,10 +96,12 @@ public class XxlJobAutoRegisterService implements ApplicationListener<Applicatio
         if (StringUtils.hasText(xxlJobAutoRegister.cron())) {
             xxlJobInfo.setScheduleType(ScheduleTypeEnum.CRON.getValue());
             xxlJobInfo.setScheduleConf(xxlJobAutoRegister.cron());
-        } else {
+        } else if (xxlJobAutoRegister.scheduleConf() > 0) {
             xxlJobInfo.setScheduleType(ScheduleTypeEnum.FIX_RATE.getValue());
             // 时间
             xxlJobInfo.setScheduleConf(String.valueOf(TimeUnit.SECONDS.convert(xxlJobAutoRegister.scheduleConf(), xxlJobAutoRegister.timeUnit())));
+        } else {
+            xxlJobInfo.setScheduleType(ScheduleTypeEnum.NONE.getValue());
         }
 
         // 任务配置

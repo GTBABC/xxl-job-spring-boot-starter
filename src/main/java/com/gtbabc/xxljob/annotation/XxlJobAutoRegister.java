@@ -27,14 +27,14 @@ public @interface XxlJobAutoRegister {
     String alarmEmail() default "";
 
     /**
-     * cron 表达式
+     * cron 表达式, 若有值则调度类型为 CORN；如果cron为空时且scheduleConf为空时则调度类型为无
      */
-    String cron();
+    String cron() default "";
 
     /**
-     * 固定速度调用时调用值 如果cron为空时使用此配置
+     * 固定速度调用时调用值 如果cron为空时,且此配置大于0，则调度类型为固定速度
      */
-    long scheduleConf() default 1;
+    long scheduleConf() default -1;
 
     /**
      * 固定速度时调用速度的单位, 默认为秒
