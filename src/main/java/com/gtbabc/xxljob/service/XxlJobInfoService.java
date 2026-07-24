@@ -89,6 +89,9 @@ public class XxlJobInfoService {
         formData.add("executorFailRetryCount", String.valueOf(xxlJobInfo.getExecutorFailRetryCount()));
         formData.add("glueRemark", xxlJobInfo.getGlueRemark());
         formData.add("triggerStatus", String.valueOf(xxlJobInfo.getTriggerStatus()));
+        formData.add("alarmEmail", xxlJobInfo.getAlarmEmail());
+        formData.add("executorParam", xxlJobInfo.getExecutorParam());
+        formData.add("childJobId", xxlJobInfo.getChildJobId());
 
         return formData;
     }
