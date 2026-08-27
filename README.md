@@ -12,11 +12,13 @@ mvn clean install
 
 ## 2、项目中引入
 
+`2.x` 版本适配 Spring Boot 4 和 XXL-JOB 3.4.x；调度中心也应使用 3.4.x，避免管理接口和执行器协议不一致。
+
 ```xml
 <dependency>
     <groupId>com.gtbabc</groupId>
     <artifactId>xxl-job-spring-boot-starter</artifactId>
-    <version>0.0.1</version>
+    <version>2.0.0</version>
 </dependency>
 ```
 
@@ -33,7 +35,8 @@ xxl:
     # 是否开启，默认开启
     enabled: true
     admin:
-      addresses: http://127.0.0.1:8099/xxl-job-admin
+      # XXL-JOB 3.4.1 起调度中心不再使用 /xxl-job-admin context-path
+      addresses: http://127.0.0.1:8099
       accessToken: default_token
       #管理员账号
       username: admin

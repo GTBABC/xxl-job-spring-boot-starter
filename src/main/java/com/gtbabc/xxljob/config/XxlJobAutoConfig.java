@@ -1,32 +1,37 @@
 package com.gtbabc.xxljob.config;
 
 import com.xxl.job.core.executor.impl.XxlJobSpringExecutor;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 
 
 /**
  * xxl-job 自动装配
  */
-@Configuration
+@AutoConfiguration
+@ConditionalOnClass(XxlJobSpringExecutor.class)
+@ConditionalOnProperty(prefix = XxlJobProperties.PREFIX, name = "enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(XxlJobProperties.class)
 @ComponentScan(basePackages = "com.gtbabc.xxljob")
 public class XxlJobAutoConfig {
-    @Autowired
-    private XxlJobProperties properties;
+    private final XxlJobProperties properties;
+
+    public XxlJobAutoConfig(XxlJobProperties properties) {
+        this.properties = properties;
+    }
 
     @Bean
-    @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = XxlJobProperties.PREFIX, value = "enabled", havingValue = "true")
+    @ConditionalOnMissingBean(XxlJobSpringExecutor.class)
     public XxlJobSpringExecutor xxlJobExecutor() {
         XxlJobSpringExecutor xxlJobSpringExecutor = new XxlJobSpringExecutor();
         xxlJobSpringExecutor.setAdminAddresses(properties.getAdmin().getAddresses());
         xxlJobSpringExecutor.setAppname(properties.getExecutor().getAppname());
+        xxlJobSpringExecutor.setAddress(properties.getExecutor().getAddress());
         xxlJobSpringExecutor.setIp(properties.getExecutor().getIp());
         xxlJobSpringExecutor.setPort(properties.getExecutor().getPort());
         xxlJobSpringExecutor.setAccessToken(properties.getAdmin().getAccessToken());
