@@ -1,7 +1,5 @@
 package com.gtbabc.xxljob.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gtbabc.xxljob.model.XxlJobInfo;
 import com.gtbabc.xxljob.response.XxlJobAdminPageModel;
 import com.gtbabc.xxljob.response.XxlJobAdminResponse;
@@ -11,6 +9,8 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import tools.jackson.core.type.TypeReference;
+import tools.jackson.databind.ObjectMapper;
 
 import java.util.List;
 import java.util.Map;
@@ -60,7 +60,7 @@ public class XxlJobInfoService {
     public void autoRegisterXxlJobInfo(XxlJobInfo xxlJobInfo) {
         MultiValueMap<String, String> requestParams = convertToFormData(xxlJobInfo);
         try {
-            String result = xxlJobWebClient.post("/jobinfo/add", requestParams, Map.of(), MediaType.APPLICATION_FORM_URLENCODED);
+            String result = xxlJobWebClient.post("/jobinfo/insert", requestParams, Map.of(), MediaType.APPLICATION_FORM_URLENCODED);
             XxlJobAdminResponse<String> response = objectMapper.readValue(result, new TypeReference<>() {
             });
             if (response.getCode() != 200) {
